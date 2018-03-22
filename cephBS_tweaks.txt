@@ -1,0 +1,18 @@
+# Adjust default values for Bluestore use in production
+# defaults are too low for production 
+  
+  # vi group_vars/all.yml
+     bluestore_block_db_size: 10240000000  <-- bump from default of 1MB
+     bluestore_block_wal_size: 5120000000  <-- bump from default of 584KB
+     fs.aio-max-nrs: 1048576               <-- bump from default of 64KB
+  
+  # ansible-playbook site.yml
+  
+  VERIFY:
+    # sysctl -a | grep aio
+      fs.aio-max-nr = 1048576
+    # lsblk shows larger partitions   <-- 9.5G and 4.8G
+    # ceph daemon osd.240 perf dump | grep total_bytes
+        "db_total_bytes": 10239336448,
+        "wal_total_bytes": 5119143936,
+        "slow_total_bytes": 79989571584,
